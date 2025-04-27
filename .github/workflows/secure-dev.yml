@@ -1,0 +1,75 @@
+name: Secure Development Analysis
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  sonarcloud-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necesario para análisis completo en SonarCloud
+
+      - name: Set up JDK (opcional, solo para Java)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run SonarCloud Analysis
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=jhonticonachambi_diagramaUML
+            -Dsonar.organization=jhonticonachambi
+            -Dsonar.projectBaseDir=.
+
+  snyk-security:
+    runs-on: ubuntu-latest
+    needs: sonarcloud-analysis  # Depende del análisis de SonarCloud
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/@v2
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --all-projects --sarif-file-output=snyk-results.sarif
+
+      - name: Upload SARIF results (para GitHub Code Scanning)
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk-results.sarif
+
+  semgrep-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep Scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/default
+          output-format: sarif
+          output-file: semgrep-results.sarif
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep-results.sarif
