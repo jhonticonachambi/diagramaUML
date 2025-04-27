@@ -1,31 +1,41 @@
-# .github/workflows/sonarcloud.yml
-
-name: SonarCloud analysis
+name: SonarCloud Analysis
 
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  workflow_dispatch:
-
-permissions:
-  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
-  Analysis:
+  sonarcloud:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Analyze with SonarCloud
-        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v4
         with:
-          args:
+          fetch-depth: 0  # Necesario para análisis completo en SonarCloud
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"  # Ajusta según tu versión
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov  # Si necesitas cobertura
+
+      - name: Run SonarCloud Scanner
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Aquí se usa tu token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Automático de GitHub
+        with:
+          projectBaseDir: .
+          args: >
             -Dsonar.projectKey=jhonticonachambi_diagramaUML
             -Dsonar.organization=jhonticonachambi
-          projectBaseDir: .
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.python.version=3.10
+            -Dsonar.sources=.
+            -Dsonar.language=py
+            -Dsonar.python.coverage.reportPaths=coverage.xml  # Si generas cobertura
