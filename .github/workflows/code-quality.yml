@@ -35,8 +35,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         sonar-scanner \
-          -Dsonar.projectKey=<TU_PROYECTO_SONARCLOUD> \
-          -Dsonar.organization=<TU_ORGANIZACION_SONARCLOUD> \
+          -Dsonar.projectKey=jhonticonachambi_diagramaUML \
+          -Dsonar.organization=jhonticonachambi \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=$SONAR_TOKEN
       continue-on-error: true
