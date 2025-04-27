@@ -6,29 +6,42 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
 jobs:
-  sonarcloud:
+  analyze:
+    name: SonarCloud
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para análisis completo en SonarCloud
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"  # Ajusta según tu versión
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-cov  # Si necesitas cobertura
+          pip install pytest pytest-cov sonarqube-scanner
 
-      - name: Run SonarCloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: Generate coverage report (si usas cobertura)
+        run: |
+          pytest --cov=. --cov-report=xml:coverage.xml tests/
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarqube-scan-action@v1.8.0
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Aquí se usa tu token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Automático de GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectBaseDir: .
           args: >
@@ -38,4 +51,3 @@ jobs:
             -Dsonar.python.version=3.10
             -Dsonar.sources=.
             -Dsonar.language=py
-            -Dsonar.python.coverage.reportPaths=coverage.xml  # Si generas cobertura
