@@ -1,0 +1,5 @@
+rules:
+  - id: detect-sql-injection
+    pattern: "cursor.execute(f\"SELECT ... WHERE $VAR = {user_input}\")"
+    message: "Potential SQL injection"
+    severity: WARNING

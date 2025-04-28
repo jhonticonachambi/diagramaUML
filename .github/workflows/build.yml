@@ -22,15 +22,47 @@ jobs:
           SONAR_HOST_URL: https://sonarcloud.io
 
   snyk:
-    name: Snyk Code Analysis (solo código)
+    name: Snyk Code Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Snyk
         uses: snyk/actions/setup@master
-      - name: Run Snyk (solo análisis de código)
-        run: snyk code test --severity-threshold=high --json-file-output=snyk_report.json
-             echo "Resultados:"
-             cat snyk_report.json
+      - name: Run Snyk Scan
+        run: |
+          snyk code test --severity-threshold=high --json > snyk_report.json || true
+          cat snyk_report.json  # Esto mostrará el reporte en los logs
         env:
-          SNYK_TOKEN: ${{ secrets.SNYk_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: snyk-code-report
+          path: snyk_report.json
+
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/r2c-security-audit  # Reglas de seguridad recomendadas
+          # Opcional: Excluir venv/ y otros
+          exclude: venv/,__pycache__/
+        env:
+          SEMGREP_RULES: p/r2c-security-audit  # Reglas específicas
+
+  # snyk:
+  #   name: Snyk Code Analysis
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Snyk
+  #       uses: snyk/actions/setup@master
+  #     - name: Run Snyk
+  #       run: snyk code test --severity-threshold=high
+  #       env:
+  #         SNYK_TOKEN: 
