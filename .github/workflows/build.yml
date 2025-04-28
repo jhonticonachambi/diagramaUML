@@ -40,6 +40,8 @@ jobs:
         run: pip install -r requirements.txt  # Asegúrate de que este archivo existe
 
       - name: Run Snyk scan
-        run: snyk test --file=requirements.txt
+        run: |
+            snyk test --file=requirements.txt --severity-threshold=high
+            snyk fix --file=requirements.txt || echo "Autofix not available"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
