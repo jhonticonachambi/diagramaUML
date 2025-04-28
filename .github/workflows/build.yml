@@ -22,10 +22,14 @@ jobs:
           SONAR_HOST_URL: https://sonarcloud.io
 
   snyk:
-    name: Snyk Security
+    name: Snyk Security Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      # Paso nuevo: Instalar Snyk CLI
+      - name: Install Snyk
+        uses: snyk/actions/setup@master
       
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,11 +37,9 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Asegúrate de que este archivo existe
+        run: pip install -r requirements.txt  # Asegúrate de que este archivo existe
 
-      - name: Run Snyk
-        run: snyk test --file=requirements.txt  # Analiza solo Python
+      - name: Run Snyk scan
+        run: snyk test --file=requirements.txt
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
