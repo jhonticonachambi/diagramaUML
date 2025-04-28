@@ -22,9 +22,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")  # importantísimo
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
-
-
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -107,16 +104,7 @@ def decode_access_token(token: str) -> TokenData:
         return TokenData(user_id=UUID(user_id), role=role)
     except JWTError:
         raise HTTPException(status_code=401, detail="Token inválido")
-
-
-# ..........................................................................................
-
-# def get_current_user(db: Session, token_data: TokenData) -> models.User:
-#     user = db.query(models.User).filter(models.User.id == token_data.user_id).first()
-#     if not user:
-#         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-#     return user
-
+    
 
 def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> models.User:
     token_data = decode_access_token(token)  # decodifica el JWT

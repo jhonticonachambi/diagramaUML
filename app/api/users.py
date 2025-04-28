@@ -1,52 +1,4 @@
-# # app/api/users.py
-# from fastapi import APIRouter, Depends, HTTPException, status
-# from sqlalchemy.orm import Session
-# from fastapi.security import OAuth2PasswordRequestForm
-
-# from app.db.session import get_db
-# from app.schemas.user_schemas import UserCreate, UserLogin, Token, UserProfileResponse
-# from app.services import user_service
-
-# router = APIRouter(prefix="/users", tags=["Users"])
-
-
-# @router.post("/register", response_model=Token)
-# def register(user_data: UserCreate, db: Session = Depends(get_db)):
-#     user = user_service.create_user(db, user_data)
-#     token = user_service.create_access_token(data={"sub": str(user.id), "role": user.role})
-#     return {"access_token": token, "token_type": "bearer"}
-
-
-# @router.post("/login", response_model=Token)
-# def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-#     user = user_service.authenticate_user(db, form_data.username, form_data.password)
-#     if not user:
-#         raise HTTPException(status_code=400, detail="Credenciales incorrectas")
-#     token = user_service.create_access_token(data={"sub": str(user.id), "role": user.role})
-#     return {"access_token": token, "token_type": "bearer"}
-
-# @router.get("/users/me", response_model=UserProfileResponse)
-# def get_user_profile(
-#     token_data: user_service.TokenData = Depends(user_service.decode_access_token),
-#     db: Session = Depends(get_db)
-# ):
-#     user = user_service.get_current_user(db, token_data)
-#     return user
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# app/api/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -112,16 +64,3 @@ async def get_user_profile(
         "created_at": current_user.created_at,
         "updated_at": current_user.updated_at  # <- Añadido
     }
-
-
-# @router.get("/me", response_model=UserProfileResponse)
-# async def get_user_profile(
-#     current_user: db_models.User = Depends(user_service.get_current_user)
-# ):
-#     return {
-#         "id": current_user.id,
-#         "username": current_user.username,
-#         "email": current_user.email,
-#         "role": current_user.role,
-#         "created_at": current_user.created_at
-#     }

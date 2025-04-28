@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, declarative_base
 import enum
 import uuid
+from sqlalchemy import Boolean
 
 Base = declarative_base()
 
@@ -27,19 +28,6 @@ diagram_collaborators = Table(
     Column('user_id', UUID(as_uuid=True), ForeignKey('users.id')),
     Column('diagram_id', UUID(as_uuid=True), ForeignKey('diagrams.id'))
 )
-
-# class User(Base):
-#     __tablename__ = 'users'
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-#     username = Column(String, unique=True, nullable=False)
-#     email = Column(String, unique=True, nullable=False)
-#     hashed_password = Column(String, nullable=False)
-#     role = Column(String, default="user")
-#     is_active = Column(Boolean, default="true")
-#     created_at = Column(DateTime, default=datetime.utcnow)
-#     updated_at = Column(DateTime, default=datetime.utcnow)
-
-from sqlalchemy import Boolean
 
 class User(Base):
     __tablename__ = 'users'

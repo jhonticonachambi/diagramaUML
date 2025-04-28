@@ -39,9 +39,6 @@ class TokenData(BaseModel):
     user_id: Optional[UUID] = None
     role: Optional[UserRole] = None
 
-
-#------------------------------------------
-
 class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, example="newusername")
     email: Optional[EmailStr] = Field(None, example="newemail@example.com")
