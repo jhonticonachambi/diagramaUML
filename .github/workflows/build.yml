@@ -10,7 +10,7 @@ on:
 
 jobs:
   sonarqube:
-    name: SonarQube
+    name: SonarQube Code Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
           path: snyk_report.json
 
   semgrep:
-    name: Semgrep
+    name: Semgrep Code Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +50,6 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: https://semgrep.dev/orgs/jhoticonac-upt-pe
-          args: --exclude-dir venv --exclude-dir __pycache__
+          args: ci --exclude-dir venv --exclude-dir __pycache__
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
