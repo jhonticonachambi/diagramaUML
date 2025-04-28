@@ -40,15 +40,3 @@ jobs:
         with:
           name: snyk-code-report
           path: snyk_report.json
-
-  semgrep:
-    name: Semgrep Code Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Semgrep (basic)
-        uses: returntocorp/semgrep-action@v2
-        with:
-          config: r/python
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}

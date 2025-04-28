@@ -1,0 +1,30 @@
+name: Semgrep Code Analysis
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  semgrep:
+    name: Semgrep SAST Scan
+    runs-on: ubuntu-latest
+    
+    # Usamos el contenedor oficial de Semgrep como recomienda la doc
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Run Semgrep Scan
+        run: |
+          semgrep ci \
+            --config=https://semgrep.dev/orgs/jhoticonac-upt-pe \
+            --exclude-dir venv \
+            --exclude-dir __pycache__ \
+            --json
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
