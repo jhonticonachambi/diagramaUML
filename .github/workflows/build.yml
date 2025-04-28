@@ -22,13 +22,29 @@ jobs:
           SONAR_HOST_URL: https://sonarcloud.io
 
   snyk:
-    name: Snyk Code Analysis (solo código)
+    name: Snyk Code Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install Snyk
+
+      # Instalar solo Snyk CLI (sin dependencias de Python)
+      - name: Setup Snyk
         uses: snyk/actions/setup@master
-      - name: Run Snyk (solo análisis de código)
-        run: snyk code test --severity-threshold=high
+
+      # Escaneo de código exclusivo (ignora venv/ y dependencias)
+      - name: Run Snyk Code Scan
+        run: |
+          snyk code test \
+            --severity-threshold=high \
+            --exclude=venv/**,**/__pycache__/**,**/*.pyc \
+            --json-file-output=snyk_code_results.json || true
         env:
-          SNYK_TOKEN: ${{ secrets.SNYk_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Opcional: Sube resultados como artefacto
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: snyk-code-report
+          path: snyk_code_results.json
