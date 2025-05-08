@@ -1,12 +1,47 @@
-# Python
+# Entornos virtuales de Python
 venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.python-version
-
-# Entornos virtuales (alternativas)
 .env/
-env/
 ENV/
+env.bak/
+.venv/
+
+# Archivos de Python generados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos y configuraciones de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de caché y logs
+*.log
+*.sqlite
+*.db
+
+# Archivos de distribución / builds
+/dist/
+/build/
+*.egg-info/
+*.egg
+
+# Archivos temporales y de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de entorno (variables sensibles)
+.env
+*.env
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PlantUML (si generas diagramas)
+*.puml
+*.plantuml
+
+# Otros
+*.bak
+*.tmp

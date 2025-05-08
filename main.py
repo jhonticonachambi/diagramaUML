@@ -1,12 +1,11 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import diagrama, generar_diagrama_desde_codigo
 
-from app.api import users, diagram, collaboration, comment, version
+app = FastAPI(title="UML Generator API")
 
-app = FastAPI(title="Plataforma UML API")
-
-# CORS para frontend local o externo
+# Permite CORS para desarrollo local
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,14 +14,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers registrados
-app.include_router(users.router)
-app.include_router(diagram.router)
-app.include_router(collaboration.router)
-app.include_router(comment.router)
-app.include_router(version.router)
-
+# Registrar rutas
+app.include_router(diagrama.router, prefix="/api")
+app.include_router(generar_diagrama_desde_codigo.router, prefix="/api")
 
 @app.get("/")
-def read_root():
-    return {"message": "Bienvenido a la API de generación UML"}
+def root():
+    return {"message": "API UML Generator activa"}
